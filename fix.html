@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Storyboard: Dozo Mission Songkhla (Stable Mode)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #1c1917; color: #e7e5e4; }
+        .story-card { background-color: #292524; border: 1px solid #44403c; transition: all 0.3s ease; }
+        .story-card:hover { border-color: #ea580c; box-shadow: 0 4px 20px rgba(234, 88, 12, 0.15); }
+        .scene-number { font-family: monospace; color: #ea580c; }
+        .dialogue-box { background-color: #000000; border-left: 4px solid #ea580c; font-family: monospace; transition: all 0.3s ease; }
+        .ai-result-box { background-color: #1e293b; border-left: 4px solid #8b5cf6; animation: fadeIn 0.5s ease-in; }
+        .img-container { aspect-ratio: 16/9; width: 100%; background-color: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-spinner { display: inline-block; width: 1rem; height: 1rem; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
+    </style>
+</head>
+<body class="p-4 md:p-8 max-w-6xl mx-auto">
+
+    <!-- Config Section -->
+    <div class="bg-stone-800 p-4 rounded-lg mb-8 border border-stone-600 shadow-xl ring-1 ring-green-500/20 flex justify-between items-center">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-green-400 font-bold text-sm">API Connected</span>
+            </div>
+            <p id="modelStatus" class="text-xs text-stone-500 font-mono mt-1">Ready to use Gemini AI (Flash Preview)</p>
+        </div>
+        <div class="text-stone-500 text-xs">Environment Key Active</div>
+    </div>
+    
+
+    <!-- Header -->
+    <header class="mb-10 text-center border-b border-stone-700 pb-6">
+        <div class="inline-flex items-center gap-2 mb-2 px-3 py-1 bg-violet-900/30 border border-violet-500/30 rounded-full text-violet-300 text-xs font-semibold tracking-wider uppercase">
+            <span>✨ บีม ฐิติพงศ์</span>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Storyboard: ภารกิจลับ...อาชีวะสงขลา</h1>
+        <p class="text-stone-400">Client: DOZO | Length: 1 min | Theme: Spy/Heist Comedy</p>
+        <div class="mt-4 flex flex-wrap justify-center gap-4 text-sm">
+            <span class="bg-stone-800 px-3 py-1 rounded border border-stone-600">📍 Location: วิทยาลัยอาชีวศึกษาสงขลา</span>
+            <span class="bg-stone-800 px-3 py-1 rounded border border-stone-600">🎭 Mood: ตื่นเต้น/ขลัง/ตลก</span>
+        </div>
+    </header>
+    
+
+    <!-- Scene 1 -->
+    <div class="story-card rounded-xl overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2 shadow-lg" id="scene-1">
+        <div class="img-container relative group">
+            <div class="absolute top-2 left-2 bg-black/70 px-2 py-1 text-xs rounded text-white z-10">REF IMAGE</div>
+             <!-- Placeholder for Image -->
+             <img src="scene1.jpg" alt="Scene 1 Image">
+        </div>
+        <div class="p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-white">SCENE 1: ดินแดนแห่งความเงียบ</h2>
+                    <span class="scene-number">EXT/INT - EVENING</span>
+                </div>
+                </div>
+            <span class="text-xl font-bold text-white">เวลา: 0:00 - 0:15</span>
+            <div>
+                <p class="text-stone-300 mb-4 text-sm leading-relaxed" id="desc-1">
+                    <strong>ภาพ:</strong> เปิดด้วยภาพตึกอำนวยการวิทยาลัยอาชีวศึกษาสงขลาที่ดูขลังยามเย็น กล้องแพนเข้าไปในโถงทางเดินยาวที่เงียบสงัด<br>
+                    <strong>Action:</strong> "โชกุน" (นักศึกษา) ย่องเบาถือแฟ้มงานผ่านหน้าห้องพักครู
+                </p>
+                <div id="ai-director-1" class="hidden mt-3 p-3 rounded text-sm text-stone-300 ai-result-box"></div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="dialogue-box p-4 rounded text-sm text-stone-300 mb-3" id="dialogue-1">
+                    <p><strong class="text-orange-500">SFX:</strong> (เสียงนาฬิกาเดินก้องตึก) ติ๊ก... ติ๊ก...</p>
+                    <p><strong class="text-orange-500">Music:</strong> ธีมสายลับ Mission Impossible (เวอร์ชั่นระนาดเอก)</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="getDirectorNotes(1)" class="flex-1 bg-stone-700 hover:bg-violet-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ ขอคำแนะนำผู้กำกับ</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scene 2 -->
+    <div class="story-card rounded-xl overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2 shadow-lg" id="scene-2">
+        <div class="img-container relative">
+            <div class="absolute top-2 left-2 bg-black/70 px-2 py-1 text-xs rounded text-white z-10">REF IMAGE</div>
+             <img src="scene2.jpg" alt="Scene 2 Image">
+        </div>
+        <div class="p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-white">SCENE 2: วิกฤตความหิว</h2>
+                    <span class="scene-number">INT - TEACHER ROOM</span>
+                </div>
+                </div>
+            <span class="text-xl font-bold text-white">เวลา: 0:15 - 0:25</span>
+            <div>
+                <p class="text-stone-300 mb-4 text-sm leading-relaxed" id="desc-2">
+                    <strong>ภาพ:</strong> โชกุนวางแฟ้มที่โต๊ะ "อาจารย์แม่" (ที่กำลังหลับ) สำเร็จ แต่ท้องร้องเสียงดังสนั่น!<br>
+                    <strong>Action:</strong> โชกุนตกใจ รีบหยิบ "โดโซะ" ออกมาจากกระเป๋าเพื่อแก้หิว
+                </p>
+                <div id="ai-director-2" class="hidden mt-3 p-3 rounded text-sm text-stone-300 ai-result-box"></div>
+            </div>
+
+            <div class="mt-4">
+                <div class="dialogue-box p-4 rounded text-sm text-stone-300 mb-3" id="dialogue-2">
+                    <p data-original="ท้องร้อง 'โครกคคค!' (ใส่ Echo)"><strong class="text-orange-500">SFX:</strong> ท้องร้อง "โครกคคค!" (ใส่ Echo)</p>
+                    <p data-original="(เหงื่อตก) 'ซวยแล้ว...'"><strong class="text-orange-500">Knot:</strong> (เหงื่อตก) "ซวยแล้ว..."</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="getDirectorNotes(2)" class="flex-1 bg-stone-700 hover:bg-violet-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ ขอคำแนะนำผู้กำกับ</span></button>
+                    <button onclick="translateToSouthern(2)" class="flex-1 bg-stone-700 hover:bg-orange-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ แหลงใต้ (ภาษาถิ่น)</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scene 3 -->
+    <div class="story-card rounded-xl overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2 shadow-lg" id="scene-3">
+        <div class="img-container relative">
+            <div class="absolute top-2 left-2 bg-black/70 px-2 py-1 text-xs rounded text-white z-10">REF IMAGE</div>
+             <img src="scene3.jpg" alt="Scene 3 Image">
+        </div>
+        <div class="p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-white">SCENE 3: หอควบคุมเตือนภัย</h2>
+                    <span class="scene-number">INT/EXT - MONITORING</span>
+                </div>
+                </div>
+            <span class="text-xl font-bold text-white">เวลา: 0:25 - 0:40</span>
+            <div>
+                <p class="text-stone-300 mb-4 text-sm leading-relaxed" id="desc-3">
+                    <strong>ภาพ:</strong> ตัดสลับไปที่ "เพื่อนแว่น" ส่องกล้องทางไกลมาจากอีกตึก พร้อมหน้าจอมอนิเตอร์กราฟเสียงสีแดง<br>
+                    <strong>Action:</strong> เพื่อนแว่น วอ (Walkie Talkie) มาห้ามทันที พร้อมขึ้นกราฟิกเตือนภัย "80 dB Warning"
+                </p>
+                <div id="ai-director-3" class="hidden mt-3 p-3 rounded text-sm text-stone-300 ai-result-box"></div>
+            </div>
+
+            <div class="mt-4">
+                <div class="dialogue-box p-4 rounded text-sm text-stone-300 mb-3" id="dialogue-3">
+                    <p data-original="'ไอ้โชกุน! อย่าเคี้ยว! โดโซะหักตัวดัง 80 เดซิเบลนะเว้ย!'"><strong class="text-orange-500">Friend:</strong> "ไอ้โชกุน! อย่าเคี้ยว! โดโซะหักตัวดัง 80 เดซิเบลนะเว้ย!"</p>
+                    <p data-original="'อาจารย์ตื่นแน่!'"><strong class="text-orange-500">Friend:</strong> "อาจารย์ตื่นแน่!"</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="getDirectorNotes(3)" class="flex-1 bg-stone-700 hover:bg-violet-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ ขอคำแนะนำผู้กำกับ</span></button>
+                    <button onclick="translateToSouthern(3)" class="flex-1 bg-stone-700 hover:bg-orange-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ แหลงใต้ (ภาษาถิ่น)</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Scene 4 -->
+    <div class="story-card rounded-xl overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2 shadow-lg" id="scene-4">
+        <div class="img-container relative">
+            <div class="absolute top-2 left-2 bg-black/70 px-2 py-1 text-xs rounded text-white z-10">REF IMAGE</div>
+             <img src="scene4.jpg   " alt="Scene 4 Image">
+        </div>
+        <div class="p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-white">SCENE 4: การเดิมพันที่แตกหัก</h2>
+                    <span class="scene-number">INT - EXTREME CLOSE UP</span>
+                </div>
+            </div>
+            <span class="text-xl font-bold text-white">เวลา: 0:40 - 0:50</span>
+            <div>
+
+                <p class="text-stone-300 mb-4 text-sm leading-relaxed" id="desc-4">
+                    <strong>ภาพ:</strong> ภาพ Slow Motion โชกุนค่อยๆ บรรจงงับขนม... ภาพ X-Ray เห็นโครงสร้างแผ่นข้าวแตกตัว<br>
+                    <strong>Action:</strong> ทันทีที่ฟันกระทบ เกิดเสียงระเบิดดังสนั่นหวั่นไหว นกพิราบบินแตกฮือทั่ววิทยาลัย
+                </p>
+                <div id="ai-director-4" class="hidden mt-3 p-3 rounded text-sm text-stone-300 ai-result-box"></div>
+            </div>
+
+            <div class="mt-4">
+                <div class="dialogue-box p-4 rounded text-sm text-stone-300 mb-3" id="dialogue-4">
+                    <p data-original="'กรุ๊บบบบบบ!!!!!' (เสียงระเบิดภูเขา)"><strong class="text-orange-500">SFX:</strong> "กรุ๊บบบบบบ!!!!!" (เสียงระเบิดภูเขา)</p>
+                    <p data-original="กล้องสั่นสะเทือน"><strong class="text-orange-500">Visual FX:</strong> กล้องสั่นสะเทือน</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="getDirectorNotes(4)" class="flex-1 bg-stone-700 hover:bg-violet-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ ขอคำแนะนำผู้กำกับ</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scene 5 -->
+    <div class="story-card rounded-xl overflow-hidden mb-8 grid grid-cols-1 md:grid-cols-2 shadow-lg" id="scene-5">
+        <div class="img-container relative">
+            <div class="absolute top-2 left-2 bg-black/70 px-2 py-1 text-xs rounded text-white z-10">REF IMAGE</div>
+             <img src="scene5.jpg" alt="Scene 5 Image">
+        </div>
+        <div class="p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-bold text-white">SCENE 5: บทสรุป</h2>
+                    <span class="scene-number">EXT - CORRIDOR</span>
+                </div>
+                 </div>
+            <span class="text-xl font-bold text-white">เวลา: 0:50 - 1:00</span>
+            <div>
+                <p class="text-stone-300 mb-4 text-sm leading-relaxed" id="desc-5">
+                    <strong>ภาพ:</strong> อาจารย์แม่สะดุ้งตื่น โชกุนวิ่งหนีสุดชีวิตลงบันไดตึกอาชีวะฯ ในมือยังกำห่อโดโซะแน่น<br>
+                    <strong>Packshot:</strong> ขึ้นภาพสินค้า พร้อมข้อความ "โดโซะ... กรอบสนั่น (ลั่นวิทยาลัย)"
+                </p>
+                <div id="ai-director-5" class="hidden mt-3 p-3 rounded text-sm text-stone-300 ai-result-box"></div>
+            </div>
+
+            <div class="mt-4">
+                <div class="dialogue-box p-4 rounded text-sm text-stone-300 mb-3" id="dialogue-5">
+                    <p data-original="'โชกุน! กลับมานี่!!'"><strong class="text-orange-500">Teacher:</strong> "โชกุน! กลับมานี่!!"</p>
+                    <p data-original="'ความกรอบระดับ 80 เดซิเบล... ที่ใครก็ห้ามไม่ได้'"><strong class="text-orange-500">Voice Over:</strong> "ความกรอบระดับ 80 เดซิเบล... ที่ใครก็ห้ามไม่ได้"</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="getDirectorNotes(5)" class="flex-1 bg-stone-700 hover:bg-violet-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ ขอคำแนะนำผู้กำกับ</span></button>
+                    <button onclick="translateToSouthern(5)" class="flex-1 bg-stone-700 hover:bg-orange-600 text-white text-xs py-2 px-3 rounded transition flex items-center justify-center gap-2"><span>✨ แหลงใต้ (ภาษาถิ่น)</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credits Section -->
+    <div class="bg-stone-800 border border-stone-600 rounded-xl p-6 mb-8 text-center shadow-lg relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-orange-500 to-violet-500"></div>
+        <h3 class="text-lg font-bold text-white mb-6 tracking-wide uppercase">🎬 ผู้จัดทำโครงงาน</h3>
+        <div class="inline-block text-left">
+            <ul class="text-stone-300 space-y-3 font-mono text-sm md:text-base">
+                <li class="flex items-center gap-3 p-2 hover:bg-stone-700/50 rounded transition border border-transparent hover:border-stone-600">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-red-900 text-red-300 text-xs font-bold">1</span> 
+                    <span class="font-semibold text-stone-200">นายฐิติพงศ์ พันธ์ยักษ์</span> 
+                    <span class="ml-auto text-xs text-stone-500 bg-stone-900 px-2 py-1 rounded border border-stone-700">ปวช.1/2 ทธด. 032</span>
+                </li>
+                <li class="flex items-center gap-3 p-2 hover:bg-stone-700/50 rounded transition border border-transparent hover:border-stone-600">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-orange-900 text-orange-300 text-xs font-bold">2</span> 
+                    <span class="font-semibold text-stone-200">นายพีรพัทธ์ พรมหทอง</span> 
+                    <span class="ml-auto text-xs text-stone-500 bg-stone-900 px-2 py-1 rounded border border-stone-700">ปวช.1/2 ทธด. 035</span>
+                </li>
+                <li class="flex items-center gap-3 p-2 hover:bg-stone-700/50 rounded transition border border-transparent hover:border-stone-600">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-amber-900 text-amber-300 text-xs font-bold">3</span> 
+                    <span class="font-semibold text-stone-200">นางสาวปํญญาพร ศรีวับ</span> 
+                    <span class="ml-auto text-xs text-stone-500 bg-stone-900 px-2 py-1 rounded border border-stone-700">ปวช.1/2 ทธด. 041</span>
+                </li>
+                <li class="flex items-center gap-3 p-2 hover:bg-stone-700/50 rounded transition border border-transparent hover:border-stone-600">
+                    <span class="flex items-center justify-center w-6 h-6 rounded-full bg-yellow-900 text-yellow-300 text-xs font-bold">4</span> 
+                    <span class="font-semibold text-stone-200">นางสาวพิมพิศา อุตตะมี</span> 
+                    <span class="ml-auto text-xs text-stone-500 bg-stone-900 px-2 py-1 rounded border border-stone-700">ปวช.1/2 ทธด. 034</span>
+                </li>
+            </ul>
+        </div>
+        <div class="mt-4 text-xs text-stone-600">วิทยาลัยอาชีวศึกษาสงขลา</div>
+    </div>
+
+    <script>
+        // Use empty string to allow runtime injection
+        const apiKey = ""; 
+
+        // Robust Gemini Caller
+        async function callGemini(prompt) {
+            // NOTE: In this preview environment, apiKey is injected automatically if left empty.
+            // If you run this locally, you must provide your own API key.
+            
+            const model = 'gemini-2.5-flash-preview-09-2025';
+
+            try {
+                document.getElementById('modelStatus').innerText = `Using Model: ${model}...`;
+                
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }]
+                };
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`${response.status} ${response.statusText} - ${errorData.error?.message || ''}`);
+                }
+
+                const data = await response.json();
+                
+                if(!data.candidates || data.candidates.length === 0) {
+                    throw new Error('No candidates returned');
+                }
+
+                // Success!
+                document.getElementById('modelStatus').innerHTML = `Connected: <span class="text-green-400">${model}</span>`;
+                return data.candidates[0].content.parts[0].text;
+
+            } catch (error) {
+                console.warn(`Failed with ${model}:`, error);
+                
+                let userMessage = "เกิดข้อผิดพลาดในการเชื่อมต่อ AI:\n";
+                userMessage += error.message;
+                alert(userMessage);
+                
+                document.getElementById('modelStatus').innerHTML = `<span class="text-red-400">Connection Failed</span>`;
+                return null;
+            }
+        }
+
+        // Feature 1: Director's Notes
+        async function getDirectorNotes(sceneId) {
+            const btn = document.querySelector(`#scene-${sceneId} button[onclick^="getDirectorNotes"]`);
+            const outputDiv = document.getElementById(`ai-director-${sceneId}`);
+            const descText = document.getElementById(`desc-${sceneId}`).innerText;
+            
+            const originalBtnText = btn.innerHTML;
+            btn.innerHTML = `<span class="loading-spinner"></span> กำลังวิเคราะห์...`;
+            btn.disabled = true;
+
+            const prompt = `
+                Act as a professional Film Director. Analyze this scene description for a TV Commercial:
+                "${descText}"
+                
+                Provide 3 brief technical notes in Thai Language (Bullet points) regarding:
+                1. Camera Angle (มุมกล้อง)
+                2. Lighting (การจัดแสง)
+                3. Acting Mood (อารมณ์นักแสดง)
+                Keep it concise and professional.
+            `;
+
+            const result = await callGemini(prompt);
+
+            if (result) {
+                outputDiv.innerHTML = `<strong class="text-violet-400 block mb-2">🎬 Director's Note (AI):</strong>${result.replace(/\n/g, '<br>')}`;
+                outputDiv.classList.remove('hidden');
+            }
+            
+            btn.innerHTML = originalBtnText;
+            btn.disabled = false;
+        }
+
+        // Feature 2: Southern Dialect Translator
+        async function translateToSouthern(sceneId) {
+            const btn = document.querySelector(`#scene-${sceneId} button[onclick^="translateToSouthern"]`);
+            const dialogueBox = document.getElementById(`dialogue-${sceneId}`);
+            const paragraphs = dialogueBox.querySelectorAll('p[data-original]');
+            
+            const originalBtnText = btn.innerHTML;
+            btn.innerHTML = `<span class="loading-spinner"></span> กำลังแปลภาษา...`;
+            btn.disabled = true;
+
+            let dialogueText = "";
+            paragraphs.forEach(p => {
+                dialogueText += p.getAttribute('data-original') + "\n";
+            });
+
+            const prompt = `
+                Translate the following dialogue into "Southern Thai Dialect (Songkhla style)". 
+                Make it sound natural, funny, and fit for a local student/teacher context.
+                Do not translate Sound Effects (SFX).
+                
+                Dialogue to translate:
+                ${dialogueText}
+                
+                Return ONLY the translated lines, line by line.
+            `;
+
+            const result = await callGemini(prompt);
+
+            if (result) {
+                const translatedLines = result.split('\n').filter(line => line.trim() !== '');
+                paragraphs.forEach((p, index) => {
+                    if (translatedLines[index]) {
+                        const speakerLabel = p.querySelector('strong').outerHTML;
+                        p.innerHTML = `${speakerLabel} <span class="text-orange-300">${translatedLines[index]}</span>`;
+                    }
+                });
+                
+                if (!dialogueBox.querySelector('.dialect-badge')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'dialect-badge text-xs text-orange-500 mt-2 text-right italic';
+                    badge.innerHTML = '*แปลเป็นภาษาใต้โดย AI';
+                    dialogueBox.appendChild(badge);
+                }
+            }
+
+            btn.innerHTML = "✨ แปลกลับ (Reset)";
+            btn.onclick = () => window.location.reload();
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
